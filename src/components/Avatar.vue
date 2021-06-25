@@ -7,8 +7,11 @@
     <div class="status-wrap">
       <div class="name">{{ value.name }}</div>
       <div class="status-container">
-        <div class="status-icon" />
-        <span v-if="isShowText" class="status">{{ value.isOnline ? 'Online' : 'Offline' }}</span>
+        <div :class="['status-icon', value.isOnline ? 'online' : 'outline']" />
+        <span v-if="isShowText" class="status">
+          <span v-if="value.isOnline">{{ value.onlineStatus || 'Online' }}</span>
+          <span v-else>Offline</span>
+        </span>
       </div>
     </div>
   </div>
@@ -115,8 +118,15 @@ export default {
       height: 8px;
       margin-right: 5px;
       margin-left: 15px;
-      background-color: #68d18b;
       border-radius: 50%;
+    }
+
+    .online {
+      background-color: #68d18b;
+    }
+
+    .outline {
+      background-color: #808080;
     }
 
     .status {
@@ -170,6 +180,21 @@ export default {
     margin-left: 15px;
     font-weight: lighter;
     font-size: 28px;
+  }
+}
+
+.search {
+  color: #303133;
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .status-wrap {
+    display: flex;
+    flex-direction: row-reverse;
   }
 }
 // .avatar-wrap {
