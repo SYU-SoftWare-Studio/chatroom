@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
     <div class="container">
-      <div class="label">头像</div>
+      <Label label="头像" />
       <div class="avatar-wrap">
         <div class="current-avatar-container" :style="color">
           <img v-if="value.avatar" class="avatar" :src="value.avatar">
@@ -23,11 +23,11 @@
 
       <div class="half-wrap">
         <div>
-          <div class="label">昵称</div>
+          <Label label="昵称" />
           <Input v-model="value.name" limit="10" is-show-limit no-empty />
         </div>
         <div>
-          <div class="label">真实姓名</div>
+          <Label label="真实姓名" />
           <Input v-model="value.realName" limit="10" is-show-limit />
         </div>
       </div>
@@ -36,11 +36,11 @@
 
       <div class="half-wrap">
         <div>
-          <div class="label">年级</div>
+          <Label label="年级" />
           <Input v-model="value.grade" limit="10" />
         </div>
         <div>
-          <div class="label">学号</div>
+          <Label label="学号" />
           <Input v-model="value.studentId" limit="8" is-show-limit />
         </div>
       </div>
@@ -48,23 +48,24 @@
       <div class="block" />
 
       <div class="online-status-wrap">
-        <div class="label">自定义在线状态</div>
+        <Label label="自定义在线状态" />
         <Input v-model="value.onlineStatus" limit="20" is-show-limit />
       </div>
 
       <div class="block" />
 
       <div class="online-status-wrap">
-        <div class="label">所在学院</div>
+        <Label label="所在学院" />
         <Input v-model="value.college" limit="20" is-show-limit />
       </div>
 
       <div class="block" />
 
       <div class="online-status-wrap">
-        <div class="label">所在专业及班级</div>
+        <Label label="所在专业及班级" />
         <Input v-model="value.major" limit="20" is-show-limit />
       </div>
+      <div class="block" />
     </div>
   </div>
 </template>
@@ -72,11 +73,13 @@
 <script>
 import SYU from '../../../engine';
 import Input from '../../components/Input.vue';
+import Label from '../../components/Label.vue';
 
 export default {
   name: 'User',
   components: {
     Input,
+    Label,
   },
   data() {
     return {
@@ -156,7 +159,6 @@ export default {
       grid-template-columns: 1fr 1fr;
       gap: 30px;
       width: 100%;
-
     }
 
     .online-status-wrap {
@@ -168,13 +170,6 @@ export default {
     width: 100%;
     height: 100%;
     object-fit: contain;
-  }
-
-  .label {
-    width: 100%;
-    margin-bottom: 8px;
-    font-size: 14px;
-    text-align: left;
   }
 
   .input {

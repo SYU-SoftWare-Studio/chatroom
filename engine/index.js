@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-
+import Vue from 'vue';
 import compress from '../utils/compress';
 import API from '../api';
 import { userInfo, contact, chatroomInfo } from '../Mock/index';
@@ -12,11 +12,6 @@ export default class SYU {
     const { data } = await API.fetchToken();
     return data;
   };
-
-  // static uploadPic = async (url: string, data: FormData): Promise<string> => {
-  //   const link: any = await API.uploadPic(url, data);
-  //   return `http://${SUB_DOMAIN}/${link.data.key}`;
-  // };
 
   static uploadPic = async (req) => {
     const token = await SYU.getToken();
@@ -46,10 +41,45 @@ export default class SYU {
     return chatroomInfo[id];
   };
 
-  // static getChatRoomMember = (id) => {
-  //   const data = chatroomInfo[id];
-  //   return data;
-  // };
-
   static fetchContact = () => contact;
+
+  static register = (data) => {
+    const status = API.register(data);
+    return status;
+  };
+
+  static login = (data) => {
+    const status = API.login(data);
+    return status;
+  };
+
+  static checkUserToken = async (that, params) => {
+    const { data } = await API.checkUserToken(params);
+    if (data.status === 0) {
+      const cookie = {
+        _id: data._id,
+        token: data.token,
+      };
+      that.$cookies.set('chatroomToken', cookie, 60 * 60 * 24 * 3);
+      that.$root.isLogin = true;
+      Vue.prototype.$canLogin = false; // 防止再次跳转到登陆页面
+      that.$message.success(data.errMsg);
+      that.$router.replace({ name: 'Index' });
+    } else {
+      that.$message.error(data.errMsg);
+      that.$cookies.remove('chatroomToken');
+      that.$root.isLogin = false;
+      Vue.prototype.$canLogin = true;
+      if (that.$route.name !== 'Login') {
+        that.$router.replace({ name: 'Login' });
+      }
+    }
+  };
+
+  static tokenErr = (that) => {
+    that.$message.error('身份认证已过期，请重新登录');
+    that.$root.isLogin = false;
+    Vue.prototype.$canLogin = true;
+    that.$router.push({ name: 'Login' });
+  };
 }
