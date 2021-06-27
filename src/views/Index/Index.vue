@@ -94,6 +94,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Slider from '@/components/Slider.vue';
 import Avatar from '@/components/Avatar.vue';
 import MessageInput from './components/MessageInput.vue';
@@ -126,6 +127,16 @@ export default {
       contactData: {},
       showRes: false,
     };
+  },
+  created() {
+    if (this.$root.isLogin === false) {
+      if (this.$cookies.isKey('chatroomToken')) {
+        SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+      } else {
+        Vue.prototype.$canLogin = true;
+        this.$router.replace({ name: 'Login' });
+      }
+    }
   },
   mounted() {
     this.contactData = SYU.fetchContact();

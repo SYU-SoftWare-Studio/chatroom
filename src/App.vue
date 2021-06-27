@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <transition name="fade" mode="out-in">
-      <router-view />
-    </transition>
+    <router-view />
   </div>
 </template>
 
@@ -20,6 +18,7 @@
 
 * {
   margin: 0;
+  box-sizing: border-box;
 }
 
 #app {
