@@ -11,9 +11,42 @@
         />
       </div>
       <div class="user-func-wrap">
-        <el-icon class="el-icon-edit-outline user-func" />
-        <el-icon class="el-icon-search user-func" />
-        <input class="user-search">
+        <el-icon class="el-icon-edit user-func" @click="alert(123123)" />
+        <span @click="showRes = true">
+          <el-icon class="el-icon-search user-func" />
+        </span>
+        <span class="search-wrap">
+          <input class="user-search" @keypress.enter="showRes = true" @blur="showRes = false">
+          <transition name="slide">
+            <div v-if="showRes" class="search-result">
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+              <Avatar :id="userId" type="search" />
+
+            </div>
+          </transition>
+        </span>
       </div>
       <div class="contact-wrap">
         <div class="public-contact">
@@ -61,6 +94,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Slider from '@/components/Slider.vue';
 import Avatar from '@/components/Avatar.vue';
 import MessageInput from './components/MessageInput.vue';
@@ -91,7 +125,18 @@ export default {
         classify: 'chatroom',
       },
       contactData: {},
+      showRes: false,
     };
+  },
+  created() {
+    if (this.$root.isLogin === false) {
+      if (this.$cookies.isKey('chatroomToken')) {
+        SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+      } else {
+        Vue.prototype.$canLogin = true;
+        this.$router.replace({ name: 'Login' });
+      }
+    }
   },
   mounted() {
     this.contactData = SYU.fetchContact();
@@ -112,6 +157,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
+fade-enter-active,
+.slide-enter-active,
+.slide-leave-active {
+  height: 250px !important;
+  transition: 0.4s ease-out;
+}
+
+.slide-enter,
+.slide-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  height: 0 !important;
+}
+
 .wrapper {
   display: flex;
   width: 100%;
@@ -147,14 +204,29 @@ export default {
       font-size: 18px;
       text-align: right;
 
-      .user-search {
-        width: 130px;
-        padding: 6px 8px;
-        color: #fff;
-        background-color: #80808080;
-        border: 0;
-        border-radius: 5px;
-        outline: none;
+      .search-wrap {
+        position: relative;
+
+        .user-search {
+          box-sizing: border-box;
+          width: 155px;
+          padding: 6px 8px;
+          color: #fff;
+          background-color: #80808080;
+          border: 0;
+          border-radius: 5px;
+          outline: none;
+        }
+
+        .search-result {
+          position: absolute;
+          width: 155px;
+          height: 250px;
+          margin-top: 5px;
+          overflow-y: scroll;
+          background-color: #fffffff0;
+          border-radius: 5px;
+        }
       }
 
       .user-func {

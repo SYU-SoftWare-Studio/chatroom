@@ -1,4 +1,4 @@
-export const userInfo = {
+export const userInfo = Object.freeze({
   2345: {
     avatar: '',
     name: 'sia',
@@ -14,7 +14,7 @@ export const userInfo = {
   3456: {
     avatar: '',
     name: 'Lasia',
-    isOnline: true,
+    isOnline: false,
     id: '3456',
     realName: '李四',
     onlineStatus: 'O_o',
@@ -23,7 +23,7 @@ export const userInfo = {
     college: '信息工程学院',
     major: '17级通信工程二班',
   },
-};
+});
 
 export const chatroomInfo = {
   112233: {

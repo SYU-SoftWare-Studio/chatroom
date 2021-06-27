@@ -34,4 +34,14 @@ const router = new VueRouter({
   routes,
 });
 
+// router.beforeEach((to, from, next) => {
+//   // if (to.name === 'Login') {
+//   //   if (Vue.prototype.$canLogin || !from.name) {
+//   //     next();
+//   //   }
+//   // } else {
+//   //   next();
+//   // }
+// });
+
 export default router;

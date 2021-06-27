@@ -5,10 +5,16 @@
       :value="value"
       class="input"
       :maxlength="maxLen"
+      :type="naviType"
       @input="handleInput"
+      @keypress.enter="keypressEnter"
     >
     <span v-if="showLimit" class="limit center">{{ curentLen }}/{{ maxLen }}</span>
     <span v-if="!curentLen && noEmpty" class="empty center">该字段不能为空</span>
+    <span v-if="checkVal" class="isChecked center">
+      <el-icon v-if="!isChecked && value" class="el-icon-error" />
+      <el-icon v-if="isChecked" class="el-icon-success" />
+    </span>
   </div>
 </template>
 
@@ -34,6 +40,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    checkVal: {
+      type: Boolean,
+      default: false,
+    },
+    checkValue: {
+      type: String,
+      default: '',
+    },
+    naviType: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     maxLen() {
@@ -45,11 +63,20 @@ export default {
     curentLen() {
       return (this.value || '').length;
     },
+    isChecked() {
+      if (this.value) {
+        return this.checkValue === this.value;
+      }
+      return false;
+    },
   },
   methods: {
     handleInput() {
       const data = this.$refs.input.value;
       this.$emit('input', data);
+    },
+    keypressEnter() {
+      this.$emit('enter');
     },
   },
 };
@@ -92,6 +119,19 @@ export default {
     left: 10px;
     color: rgb(255, 122, 122);
     font-size: 12px;
+  }
+
+  .isChecked{
+    position: absolute;
+    right: 10px;
+
+    .el-icon-error{
+      color: #F56C6C;
+    }
+
+    .el-icon-success{
+      color: #67C23A;
+    }
   }
 }
 </style>
