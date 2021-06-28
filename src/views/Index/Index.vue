@@ -166,7 +166,11 @@ export default {
         targetId,
       };
       const check = await SYU.addNewChat(params);
-      return check;
+      if (check) {
+        const data = await SYU.fetchTalkList({ _id: this.$root._id });
+        this.talkList.chat = data;
+        this.setObjVal(this.currentRoom.data, data[data.length - 1]);
+      }
     },
   },
 };
