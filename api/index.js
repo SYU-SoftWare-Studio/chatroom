@@ -40,4 +40,36 @@ export default class API {
       data,
     });
   };
+
+  static searchUserAndRoom = (params) => {
+    return service.request({
+      method: 'GET',
+      url: 'searchUserAndRoom',
+      params,
+    });
+  }
+
+  static fetchTalkList = (params) => {
+    return service.request({
+      method: 'GET',
+      url: 'users/talkList',
+      params,
+    });
+  };
+
+  static fetchUserInfo = (params) => {
+    return service.request({
+      method: 'GET',
+      url: 'users/fetchUserInfo',
+      params,
+    });
+  };
+
+  static addNewChat = (params) => {
+    return service.request({
+      method: 'GET',
+      url: 'users/addNewChat',
+      params,
+    });
+  }
 }

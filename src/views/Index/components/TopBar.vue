@@ -2,7 +2,7 @@
   <div class="top-bar-wrap">
     <Star v-model="isStar" class="star" />
     <Avatar
-      :id="room.id"
+      :data="room.data"
       class="avatar"
       type="bar"
       :classify="room.classify"

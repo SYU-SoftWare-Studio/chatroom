@@ -23,6 +23,8 @@ new Vue({
   data() {
     return {
       isLogin: false,
+      // eslint-disable-next-line
+      _id: '',
     };
   },
   render: (h) => h(App),

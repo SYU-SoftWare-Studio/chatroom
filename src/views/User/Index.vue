@@ -49,21 +49,21 @@
 
       <div class="online-status-wrap">
         <Label label="自定义在线状态" />
-        <Input v-model="value.onlineStatus" limit="20" is-show-limit />
+        <Input v-model="value.onlineStatus" limit="10" is-show-limit />
       </div>
 
       <div class="block" />
 
       <div class="online-status-wrap">
         <Label label="所在学院" />
-        <Input v-model="value.college" limit="20" is-show-limit />
+        <Input v-model="value.collage" limit="10" is-show-limit />
       </div>
 
       <div class="block" />
 
       <div class="online-status-wrap">
         <Label label="所在专业及班级" />
-        <Input v-model="value.major" limit="20" is-show-limit />
+        <Input v-model="value.major" limit="10" is-show-limit />
       </div>
       <div class="block" />
     </div>
@@ -92,8 +92,8 @@ export default {
       color: { backgroundColor: SYU.randomColor() },
     };
   },
-  mounted() {
-    this.value = SYU.getInfo(this.id, 'user');
+  async mounted() {
+    this.value = await SYU.fetchUserInfo({ _id: this.id });
     this.previewAvatar = this.value.avatar;
   },
 };

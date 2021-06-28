@@ -2,7 +2,7 @@
   <div :class="['avatar-wrap', type]">
     <div class="avatar" :style="color" @click="handleClick">
       <img v-if="value.avatar" :src="value.avatar">
-      <p v-else>{{ value.name[0].toUpperCase() }}</p>
+      <p v-else>{{ !value.name || value.name[0].toUpperCase() }}</p>
     </div>
     <div class="status-wrap">
       <div class="name">{{ value.name }}</div>
@@ -23,9 +23,13 @@ import SYU from '../../engine/index';
 export default {
   name: 'Avatar',
   props: {
-    id: {
-      type: String,
+    data: {
+      type: Object,
       required: true,
+      default: () => ({
+        name: ' ',
+        avatar: ' ',
+      }),
     },
     showStatusText: {
       type: Boolean,
@@ -52,8 +56,8 @@ export default {
     return {
       color: { backgroundColor: SYU.randomColor(), cursor: this.clickable ? 'pointer' : 'default' },
       value: {
-        avatar: '',
-        name: '',
+        name: ' ',
+        avatar: ' ',
       },
     };
   },
@@ -62,13 +66,8 @@ export default {
       return this.type !== 'contact' && this.showStatusText;
     },
   },
-  watch: {
-    id: {
-      immediate: true,
-      handler() {
-        this.value = SYU.getInfo(this.id, this.classify);
-      },
-    },
+  mounted() {
+    this.value = this.data;
   },
   methods: {
     handleClick() {
@@ -76,7 +75,7 @@ export default {
         return;
       }
       if (this.isUser) {
-        this.$router.push({ path: `/user/${this.id}` });
+        this.$router.push({ path: `/user/${this.value._id}` });
         return;
       }
       this.$emit('click', this.id);
@@ -174,12 +173,13 @@ export default {
     .status-container {
       margin-top: 8px;
     }
+
   }
 
   .name {
     margin-left: 15px;
     font-weight: lighter;
-    font-size: 28px;
+    font-size: 22px;
   }
 }
 
@@ -195,6 +195,15 @@ export default {
   .status-wrap {
     display: flex;
     flex-direction: row-reverse;
+
+    .status-icon {
+      margin-left: 5px;
+    }
+  }
+
+  .name {
+    margin-left: 0;
+    font-size: 12px;
   }
 }
 // .avatar-wrap {

@@ -3,7 +3,7 @@
     <div class="left-bar">
       <div class="user-avatar-wrap">
         <Avatar
-          :id="userId"
+          :data="userData"
           type="user"
           show-status-text
           is-user
@@ -16,34 +16,17 @@
           <el-icon class="el-icon-search user-func" />
         </span>
         <span class="search-wrap">
-          <input class="user-search" @keypress.enter="showRes = true" @blur="showRes = false">
+          <input
+            v-model="searchKey"
+            class="user-search"
+            @keypress.enter="handleSearch"
+            @blur="showRes = false"
+          >
           <transition name="slide">
             <div v-if="showRes" class="search-result">
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-              <Avatar :id="userId" type="search" />
-
+              <div v-for="(item, index) in searchResult" :key="index" class="result" @click="addNewChat(item._id)">
+                <Avatar :data="item" type="search" />
+              </div>
             </div>
           </transition>
         </span>
@@ -52,34 +35,34 @@
         <div class="public-contact">
           <div class="contact-header">公共频道</div>
           <div
-            v-for="(item, index) of contactData.public"
+            v-for="(item, index) of talkList.public"
             :key="index"
-            :class="['contact-container', currentRoom.id === item ? 'select' : '']"
+            :class="['contact-container', currentRoom.data._id === item._id ? 'select' : '']"
             @click="onRoomSelect(item, 'chatroom')"
           >
-            <Avatar :id="item" classify="chatroom" class="contact" />
+            <Avatar :data="item" classify="chatroom" class="contact" />
           </div>
-          <div class="private-contact">
-            <div class="contact-header">私有频道</div>
-            <div
-              v-for="(item, index) of contactData.private"
-              :key="index"
-              :class="['contact-container', currentRoom.id === item ? 'select' : '']"
-              @click="onRoomSelect(item, 'chatroom')"
-            >
-              <Avatar :id="item" classify="chatroom" class="contact" />
-            </div>
+        </div>
+        <div class="private-contact">
+          <div class="contact-header">私有频道</div>
+          <div
+            v-for="(item, index) of talkList.private"
+            :key="index"
+            :class="['contact-container', currentRoom.data._id === item._id ? 'select' : '']"
+            @click="onRoomSelect(item, 'chatroom')"
+          >
+            <Avatar :data="item" classify="chatroom" class="contact" />
           </div>
-          <div class="private-contact">
-            <div class="contact-header">私聊</div>
-            <div
-              v-for="(item, index) of contactData.chat"
-              :key="index"
-              :class="['contact-container', currentRoom.id === item ? 'select' : '']"
-              @click="onRoomSelect(item, 'user')"
-            >
-              <Avatar :id="item" class="contact" classify="user" />
-            </div>
+        </div>
+        <div class="private-contact">
+          <div class="contact-header">私聊</div>
+          <div
+            v-for="(item, index) of talkList.chat"
+            :key="index"
+            :class="['contact-container', currentRoom.data._id === item._id ? 'select' : '']"
+            @click="onRoomSelect(item, 'user')"
+          >
+            <Avatar :data="item" class="contact" classify="user" />
           </div>
         </div>
       </div>
@@ -114,9 +97,11 @@ export default {
   data() {
     return {
       color: { backgroundColor: SYU.randomColor() },
-      userId: '2345',
+      searchKey: '',
+      searchResult: [],
+      userData: {},
       currentRoom: {
-        id: '2345',
+        data: {},
         classify: 'user',
       },
       showSlider: false,
@@ -124,33 +109,64 @@ export default {
         type: 'list',
         classify: 'chatroom',
       },
-      contactData: {},
+      talkList: {
+        chat: [],
+        private: [],
+        public: [],
+      },
       showRes: false,
     };
   },
-  created() {
+  async created() {
     if (this.$root.isLogin === false) {
       if (this.$cookies.isKey('chatroomToken')) {
-        SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
-      } else {
-        Vue.prototype.$canLogin = true;
-        this.$router.replace({ name: 'Login' });
+        await SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+        this.fetchData(this.$root._id);
+        return;
       }
+      Vue.prototype.$canLogin = true;
+      this.$router.replace({ name: 'Login' });
+      return;
     }
-  },
-  mounted() {
-    this.contactData = SYU.fetchContact();
+    this.fetchData(this.$root._id);
   },
   methods: {
     handleMember(type) {
       this.showSlider = true;
       this.slider.type = type;
     },
-    onRoomSelect(id, classify) {
-      this.currentRoom.id = id;
+    onRoomSelect(data, classify) {
+      this.setObjVal(this.currentRoom.data, data);
       this.currentRoom.classify = classify;
       this.slider.classify = classify;
       this.showSlider = false;
+    },
+    async fetchData(_id) {
+      const data = await SYU.fetchTalkList({ _id });
+      this.talkList.chat = data;
+      this.setObjVal(this.userData, data[0]);
+      this.setObjVal(this.currentRoom.data, data[0]);
+    },
+    setObjVal(target, source) {
+      Object.keys(source).forEach((key) => {
+        this.$set(target, key, source[key]);
+      });
+    },
+    async handleSearch() {
+      if (!this.searchKey.trim()) {
+        this.$message.error('搜索内容不能为空');
+        return;
+      }
+      this.searchResult = await SYU.searchUserAndRoom({ key: this.searchKey });
+      this.showRes = true;
+    },
+    async addNewChat(targetId) {
+      const params = {
+        _id: this.$root._id,
+        targetId,
+      };
+      const check = await SYU.addNewChat(params);
+      return check;
     },
   },
 };
@@ -175,6 +191,8 @@ fade-enter-active,
   height: 100%;
 
   .left-bar {
+    display: flex;
+    flex-direction: column;
     width: 280px;
     height: 100%;
     background-color: #525252;
@@ -220,12 +238,36 @@ fade-enter-active,
 
         .search-result {
           position: absolute;
+          display: flex;
+          flex-direction: column;
           width: 155px;
           height: 250px;
           margin-top: 5px;
+          padding: 10px 0;
           overflow-y: scroll;
           background-color: #fffffff0;
           border-radius: 5px;
+
+          &::-webkit-scrollbar {
+            width: 8px;
+            background: #3a3a3a4d;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            width: 10px;
+            background-color: #faa;
+            border-radius: 4px;
+          }
+
+          .result {
+            padding: 5px 0 5px 5px;
+            cursor: pointer;
+            transition: 0.3s ease-in;
+
+            &:hover {
+              background-color: #9494944d;
+            }
+          }
         }
       }
 
@@ -241,8 +283,21 @@ fade-enter-active,
     }
 
     .contact-wrap {
+      flex: 1;
       margin-top: 20px;
+      overflow-y: scroll;
       text-align: left;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+        background: #9494944d;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        width: 10px;
+        background-color: #ffffff50;
+        border-radius: 4px;
+      }
 
       .public-contact,
       .private-contact {

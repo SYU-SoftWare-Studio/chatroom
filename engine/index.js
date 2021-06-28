@@ -8,6 +8,7 @@ const DOMAIN = 'https://upload-z2.qiniup.com';
 const SUB_DOMAIN = 'quxf545jx.hn-bkt.clouddn.com';
 
 export default class SYU {
+  // get QiNiu token
   static getToken = async () => {
     const { data } = await API.fetchToken();
     return data;
@@ -62,6 +63,7 @@ export default class SYU {
       };
       that.$cookies.set('chatroomToken', cookie, 60 * 60 * 24 * 3);
       that.$root.isLogin = true;
+      that.$root._id = data._id;
       Vue.prototype.$canLogin = false; // 防止再次跳转到登陆页面
       that.$message.success(data.errMsg);
       that.$router.replace({ name: 'Index' });
@@ -76,10 +78,34 @@ export default class SYU {
     }
   };
 
-  static tokenErr = (that) => {
-    that.$message.error('身份认证已过期，请重新登录');
-    that.$root.isLogin = false;
-    Vue.prototype.$canLogin = true;
-    that.$router.push({ name: 'Login' });
-  };
+  static fetchUserInfo = async (params) => {
+    const { data } = await API.fetchUserInfo(params);
+    return data;
+  }
+
+  static fetchTalkList = async (params) => {
+    const { data } = await API.fetchTalkList(params);
+    return data;
+  }
+
+  static searchUserAndRoom = async (params) => {
+    const { data } = await API.searchUserAndRoom(params);
+    return data;
+  }
+
+  static addNewChat = async (params) => {
+    const { data } = await API.addNewChat(params);
+    if (data.status === 0) {
+      return true;
+    }
+    Vue.prototype.$message.error(data.errMsg);
+    return false;
+  }
+
+  // static tokenErr = (that) => {
+  //   that.$message.error('身份认证已过期，请重新登录');
+  //   that.$root.isLogin = false;
+  //   Vue.prototype.$canLogin = true;
+  //   that.$router.push({ name: 'Login' });
+  // };
 }

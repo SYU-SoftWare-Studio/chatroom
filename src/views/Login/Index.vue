@@ -104,6 +104,7 @@ export default {
         this.handleLogin();
       }
     },
+    // Todo
     async handleRegist() {
       const { account, password, name, code } = this.value;
       if (account.trim() && password.trim() && name.trim() && code.trim()) {
@@ -138,6 +139,7 @@ export default {
           };
           this.$cookies.set('chatroomToken', cookie, 60 * 60 * 24 * 3);
           this.$root.isLogin = true;
+          this.$root._id = data._id;
           this.$message.success(data.errMsg);
           this.$router.replace({ name: 'Index' });
         } else {
@@ -153,11 +155,11 @@ export default {
 
 <style lang="less" scoped>
 .wrap {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   letter-spacing: 1px;
 }
 
@@ -165,25 +167,30 @@ export default {
   width: 440px;
   padding: 30px 40px;
 }
+
 .blank {
   width: 100%;
   height: 1px;
   margin: 15px;
 }
-.login{
+
+.login {
   width: 100%;
 }
-.text-link{
-  text-align: right;
-  margin-right: 5px;
+
+.text-link {
   margin-top: 15px;
+  margin-right: 5px;
   font-size: 14px;
-  span{
-    color: #409EFF;
+  text-align: right;
+
+  span {
+    color: #409eff;
     cursor: pointer;
     transition: 0.2s linear;
-    &:hover{
-      color: #ffaaaa;
+
+    &:hover {
+      color: #faa;
     }
   }
 }

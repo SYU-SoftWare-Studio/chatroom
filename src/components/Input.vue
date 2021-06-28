@@ -11,7 +11,7 @@
     >
     <span v-if="showLimit" class="limit center">{{ curentLen }}/{{ maxLen }}</span>
     <span v-if="!curentLen && noEmpty" class="empty center">该字段不能为空</span>
-    <span v-if="checkVal" class="isChecked center">
+    <span v-if="checkVal" class="is-hecked center">
       <el-icon v-if="!isChecked && value" class="el-icon-error" />
       <el-icon v-if="isChecked" class="el-icon-success" />
     </span>
@@ -121,16 +121,16 @@ export default {
     font-size: 12px;
   }
 
-  .isChecked{
+  .is-checked {
     position: absolute;
     right: 10px;
 
-    .el-icon-error{
-      color: #F56C6C;
+    .el-icon-error {
+      color: #f56c6c;
     }
 
-    .el-icon-success{
-      color: #67C23A;
+    .el-icon-success {
+      color: #67c23a;
     }
   }
 }
