@@ -6,6 +6,7 @@
       class="input"
       :maxlength="maxLen"
       :type="naviType"
+      :readonly="readonly"
       @input="handleInput"
       @keypress.enter="keypressEnter"
     >
@@ -52,6 +53,10 @@ export default {
       type: String,
       default: '',
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     maxLen() {
@@ -89,6 +94,7 @@ export default {
   .input {
     box-sizing: border-box;
     width: 100%;
+    height: 100%;
     padding: 8px 18px 8px 10px;
     font-size: 14px;
     border: 1px solid #e4e7ed;

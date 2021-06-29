@@ -3,7 +3,12 @@
     <div v-if="data.type === 'list'" class="slider slide-in">
       <Avatar id="2345" type="contact" clickable @click="getUserInfo" />
     </div>
-    <div v-if="data.type === 'user'" class="slider slide-in">123123123</div>
+    <div v-if="data.type === 'user'" class="slider slide-in">
+      <div class="info-container">
+        <Avatar :data="info" type="user" only-avatar />
+        <div class="name">{{ info.name }}</div>
+      </div>
+    </div>
     <div v-if="data.type === 'info'" class="slider slide-in">123123123</div>
     <div v-if="data.type === 'list' && isShow" :class="['data-display', style]">
       <div class="header">
@@ -35,6 +40,11 @@ export default {
     },
     // eslint-disable-next-line
     data: {
+      type: Object,
+      require: true,
+    },
+    // eslint-disable-next-line
+    info: {
       type: Object,
       require: true,
     },
@@ -125,6 +135,24 @@ export default {
     z-index: 10;
     background-color: #fff;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .slider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .info-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .name {
+        margin-top: 8px;
+        font-size: 20px;
+      }
+    }
+
   }
 
   .data-display {

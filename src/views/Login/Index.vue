@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import Input from '../../components/Input.vue';
 import Label from '../../components/Label.vue';
 import SYU from '../../../engine';
@@ -91,7 +92,10 @@ export default {
     //   this.$cookies.remove('chatroomToken');
     // }
     if (this.$cookies.isKey('chatroomToken')) {
-      SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+      const check = await SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+      if (check) {
+        this.$router.replace({ name: 'Index' });
+      }
     } else {
       this.$cookies.remove('chatroomToken');
     }
@@ -119,7 +123,7 @@ export default {
           code: code.trim(),
         };
         const { data } = await SYU.register(params);
-        this.$$message.success(data.errMsg);
+        this.$message.success(data.errMsg);
       } else {
         this.$message.error('邮箱，密码，用户名为必填项');
       }
@@ -138,8 +142,8 @@ export default {
             token: data.token,
           };
           this.$cookies.set('chatroomToken', cookie, 60 * 60 * 24 * 3);
-          this.$root.isLogin = true;
-          this.$root._id = data._id;
+          Vue.prototype.$isLogin = true;
+          Vue.prototype.$_id = data._id;
           this.$message.success(data.errMsg);
           this.$router.replace({ name: 'Index' });
         } else {

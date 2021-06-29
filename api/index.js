@@ -65,11 +65,43 @@ export default class API {
     });
   };
 
+  static fetchOthersInfo = (params) => {
+    return service.request({
+      method: 'GET',
+      url: 'users/fetchOthersInfo',
+      params,
+    });
+  }
+
   static addNewChat = (params) => {
     return service.request({
       method: 'GET',
       url: 'users/addNewChat',
       params,
+    });
+  }
+
+  static fetchInvitationCode = (data) => {
+    return service.request({
+      method: 'POST',
+      url: 'users/fetchInvitationCode',
+      data,
+    });
+  }
+
+  static regenerateInvitationCode = (data) => {
+    return service.request({
+      method: 'POST',
+      url: 'users/regenerateInvitationCode',
+      data,
+    });
+  }
+
+  static saveUserProfile = (data) => {
+    return service.request({
+      method: 'POST',
+      url: 'users/saveUserProfile',
+      data,
     });
   }
 }

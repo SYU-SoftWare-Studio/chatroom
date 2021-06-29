@@ -4,7 +4,7 @@
       <img v-if="value.avatar" :src="value.avatar">
       <p v-else>{{ !value.name || value.name[0].toUpperCase() }}</p>
     </div>
-    <div class="status-wrap">
+    <div v-if="!onlyAvatar" class="status-wrap">
       <div class="name">{{ value.name }}</div>
       <div class="status-container">
         <div :class="['status-icon', value.isOnline ? 'online' : 'outline']" />
@@ -48,6 +48,10 @@ export default {
       default: 'user',
     },
     isUser: {
+      type: Boolean,
+      default: false,
+    },
+    onlyAvatar: {
       type: Boolean,
       default: false,
     },

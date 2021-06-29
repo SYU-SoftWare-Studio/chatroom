@@ -12,7 +12,7 @@
       </div>
       <div class="user-func-wrap">
         <el-icon class="el-icon-edit user-func" @click="alert(123123)" />
-        <span @click="showRes = true">
+        <span @click="loginOut">
           <el-icon class="el-icon-search user-func" />
         </span>
         <span class="search-wrap">
@@ -60,7 +60,7 @@
             v-for="(item, index) of talkList.chat"
             :key="index"
             :class="['contact-container', currentRoom.data._id === item._id ? 'select' : '']"
-            @click="onRoomSelect(item, 'user')"
+            @click="onRoomSelect(item,index, 'user')"
           >
             <Avatar :data="item" class="contact" classify="user" />
           </div>
@@ -72,7 +72,7 @@
       <Content />
       <TopBar :is-slider-show="showSlider" :room="currentRoom" @member="handleMember" />
     </div>
-    <Slider v-model="showSlider" :data="slider" />
+    <Slider v-model="showSlider" :data="slider" :info="currentRoom.data" />
   </div>
 </template>
 
@@ -115,28 +115,43 @@ export default {
         public: [],
       },
       showRes: false,
+      timmer: '',
     };
   },
   async created() {
-    if (this.$root.isLogin === false) {
+    if (Vue.prototype.$isLogin === false) {
       if (this.$cookies.isKey('chatroomToken')) {
-        await SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
-        this.fetchData(this.$root._id);
+        const check = await SYU.checkUserToken(this, this.$cookies.get('chatroomToken'));
+        if (!check) {
+          this.$router.replace({ name: 'Login' });
+          return;
+        }
+      } else {
+        Vue.prototype.$canLogin = true;
+        this.$router.replace({ name: 'Login' });
         return;
       }
-      Vue.prototype.$canLogin = true;
-      this.$router.replace({ name: 'Login' });
-      return;
     }
-    this.fetchData(this.$root._id);
+    this.fetchData(Vue.prototype.$_id);
+    this.timmer = setInterval(() => {
+    }, 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.timmer);
   },
   methods: {
     handleMember(type) {
       this.showSlider = true;
       this.slider.type = type;
     },
-    onRoomSelect(data, classify) {
-      this.setObjVal(this.currentRoom.data, data);
+    async onRoomSelect(data, index, classify) {
+      if (classify === 'user') {
+        const res = await SYU.fetchUserInfo({ _id: data._id });
+        this.setObjVal(this.talkList.chat[index], res);
+        this.setObjVal(this.currentRoom.data, res);
+      } else {
+        this.setObjVal(this.currentRoom.data, data);
+      }
       this.currentRoom.classify = classify;
       this.slider.classify = classify;
       this.showSlider = false;
@@ -162,15 +177,21 @@ export default {
     },
     async addNewChat(targetId) {
       const params = {
-        _id: this.$root._id,
+        _id: Vue.prototype.$_id,
         targetId,
       };
       const check = await SYU.addNewChat(params);
       if (check) {
-        const data = await SYU.fetchTalkList({ _id: this.$root._id });
+        const data = await SYU.fetchTalkList({ _id: Vue.prototype.$_id });
         this.talkList.chat = data;
         this.setObjVal(this.currentRoom.data, data[data.length - 1]);
       }
+    },
+    loginOut() {
+      this.$cookies.remove('chatroomToken');
+      this.$message.info('退出登录');
+      Vue.prototype.$isLogin = false;
+      this.$router.replace({ name: 'Login' });
     },
   },
 };

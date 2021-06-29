@@ -62,25 +62,34 @@ export default class SYU {
         token: data.token,
       };
       that.$cookies.set('chatroomToken', cookie, 60 * 60 * 24 * 3);
-      that.$root.isLogin = true;
-      that.$root._id = data._id;
+      Vue.prototype.$isLogin = true;
+      Vue.prototype.$_id = data._id;
       Vue.prototype.$canLogin = false; // 防止再次跳转到登陆页面
       that.$message.success(data.errMsg);
-      that.$router.replace({ name: 'Index' });
-    } else {
-      that.$message.error(data.errMsg);
-      that.$cookies.remove('chatroomToken');
-      that.$root.isLogin = false;
-      Vue.prototype.$canLogin = true;
-      if (that.$route.name !== 'Login') {
-        that.$router.replace({ name: 'Login' });
-      }
+      return true;
     }
+    that.$message.error(data.errMsg);
+    that.$cookies.remove('chatroomToken');
+    Vue.prototype.isLogin = false;
+    Vue.prototype.$canLogin = true;
+    return false;
+    // if (that.$route.name !== 'Login') {
+    //   that.$router.replace({ name: 'Login' });
+    // }
   };
 
   static fetchUserInfo = async (params) => {
     const { data } = await API.fetchUserInfo(params);
     return data;
+  }
+
+  static fetchOthersInfo = async (params) => {
+    const { data } = await API.fetchOthersInfo(params);
+    if (data.status === 0) {
+      return data.value;
+    }
+    Vue.prototype.$message.error(data.errMsg);
+    return false;
   }
 
   static fetchTalkList = async (params) => {
@@ -101,6 +110,38 @@ export default class SYU {
     Vue.prototype.$message.error(data.errMsg);
     return false;
   }
+
+  static fetchInvitationCode = async (params) => {
+    const { data } = await API.fetchInvitationCode(params);
+    if (data.status === 0) {
+      return data.code;
+    }
+    Vue.prototype.$message.error(data.errMsg);
+    return null;
+  }
+
+  static regenerateInvitationCode = async (params) => {
+    const { data } = await API.regenerateInvitationCode(params);
+    if (data.status === 0) {
+      return data.code;
+    }
+    Vue.prototype.$message.error(data.errMsg);
+    return null;
+  }
+
+  static saveUserProfile = async (that, params) => {
+    const { data } = await API.saveUserProfile(params);
+    if (data.status === 0) {
+      Vue.prototype.$message.success(data.errMsg);
+      return true;
+    } if (data.status === 2) {
+      that.$cookies.remove('chatroomToken');
+    }
+    Vue.prototype.$message.success(data.errMsg);
+    return false;
+  }
+
+  // static identifyUser =
 
   // static tokenErr = (that) => {
   //   that.$message.error('身份认证已过期，请重新登录');
